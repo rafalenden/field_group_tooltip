@@ -1,0 +1,66 @@
+<?php
+
+/**
+ * @file
+ * Make possible to show entity fields as tooltip in field group.
+ */
+
+/**
+ * Implements hook_field_group_formatter_info().
+ */
+function field_group_tooltip_field_group_formatter_info() {
+  return array(
+    'display' => array(
+      'tooltip' => array(
+        'label' => t('Tooltip'),
+        'format_types' => array('hover', 'click'),
+        'default_formatter' => 'hover',
+        'instance_settings' => array(
+          'path' => '',
+          'block' => 0,
+          'hide_if_empty' => 0,
+        ),
+      ),
+    ),
+  );
+}
+
+/**
+ * Implements hook_field_group_format_settings().
+ */
+function field_group_tooltip_field_group_format_settings($group) {
+  $form = array();
+  switch ($group->format_type) {
+    case 'tooltip':
+  }
+  return $form;
+}
+
+/**
+ * Implements hook_field_group_pre_render().
+ */
+function field_group_tooltip_field_group_pre_render(&$element, $group, & $form) {
+  $path = drupal_get_path('module', 'field_group_tooltip');
+  drupal_add_css($path . '/css/field_group_tooltip.css');
+
+  switch ($group->format_type) {
+    case 'tooltip':
+      $tooltip = array(
+        '#type' => 'markup',
+        '#weight' => $group->weight,
+      );
+      $tooltip['#prefix'] = '<div class="field-group field-group-tooltip">';
+      $tooltip['#suffix'] = '</div>';
+      if (module_exists('beautytips')) {
+        $options['field_group_tooltip'] = array(
+          'cssSelect' => '.node-animal.view-mode-teaser',
+          'contentSelector' => '$(this).find(".field-group-tooltip").html()',
+          'trigger' => array(0 => 'mouseover'),
+          'width' => 250,
+        );
+        beautytips_add_beautytips($options);
+      }
+      $element += $tooltip;
+      break;
+  }
+}

@@ -1,0 +1,13 @@
+<?php
+
+/**
+ * Implements hook_install().
+ */
+function field_group_tooltip_install() {
+}
+
+/**
+ * Implements hook_uninstall().
+ */
+function field_group_tooltip_uninstall() {
+}
