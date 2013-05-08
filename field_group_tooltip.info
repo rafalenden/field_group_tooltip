@@ -5,6 +5,3 @@ core = 7.x
 
 dependencies[] = field_group
 dependencies[] = beautytips
-
-files[] = field_group_tooltip.install
-files[] = field_group_tooltip.module
