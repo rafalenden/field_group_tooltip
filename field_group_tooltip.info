@@ -1,4 +1,4 @@
-name = Field group Tooltip
+name = Fieldgroup Tooltip
 description = Add field group Tooltip type.
 package = Fields
 core = 7.x
