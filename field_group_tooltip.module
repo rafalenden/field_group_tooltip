@@ -17,7 +17,7 @@ function field_group_tooltip_field_group_formatter_info() {
           'classes' => '',
           'css_selector' => '',
           'width' => 250,
-          'hide_if_empty' => 0,
+          'trigger' => 'hover',
         ),
       ),
     ),
@@ -28,9 +28,15 @@ function field_group_tooltip_field_group_formatter_info() {
  * Implements hook_field_group_format_settings().
  */
 function field_group_tooltip_field_group_format_settings($group) {
-  $form = array();
+  $form = array(
+    'instance_settings' => array(
+      '#tree' => TRUE,
+      '#weight' => 2,
+    ),
+  );
 
   $mode = $group->mode == 'form' ? 'form' : 'display';
+
   $field_group_types = field_group_formatter_info();
   $formatter = $field_group_types[$mode][$group->format_type];
   $default_settings = $formatter['instance_settings'];
@@ -39,21 +45,30 @@ function field_group_tooltip_field_group_format_settings($group) {
   $form['instance_settings']['css_selector'] = array(
     '#title' => t('CSS selector of tooltip parent'),
     '#type' => 'textfield',
-    '#default_value' => isset($settings['css_selector']) ?
-     $settings['css_selector'] : $default_settings['css_selector'],
+    '#default_value' => isset($settings['css_selector'])
+      ? $settings['css_selector'] : $default_settings['css_selector'],
   );
 
-  if ($mode == 'form') {
-    $form['instance_settings']['width'] = array(
-      '#title' => t('Tooltip width'),
-      '#type' => 'textfield',
-      '#size' => 4,
-      '#maxlength' => 4,
-      '#suffix' => 'px',
-      '#default_value' => isset($settings['width']) ?
-       $settings['width'] : $default_settings['width'],
-    );
-  }
+  $form['instance_settings']['width'] = array(
+    '#title' => t('Tooltip width'),
+    '#type' => 'textfield',
+    '#size' => 4,
+    '#maxlength' => 4,
+    '#field_suffix' => 'px',
+    '#default_value' => isset($settings['width'])
+      ? $settings['width'] : $default_settings['width'],
+  );
+
+  $form['instance_settings']['trigger'] = array(
+    '#title' => t('Show tooltip on'),
+    '#type' => 'select',
+    '#options' => array(
+      'hover' => t('Mouse hover'),
+      'click' => t('Click'),
+    ),
+    '#default_value' => isset($settings['trigger'])
+      ? $settings['trigger'] : $default_settings['trigger'],
+  );
 
   return $form;
 }
@@ -66,13 +81,30 @@ function field_group_tooltip_field_group_pre_render(&$element, $group, &$form) {
     return FALSE;
   }
 
-  $css_selector = str_replace('_', '-', '.' . $group->entity_type);
+  $mode = $group->mode == 'form' ? 'form' : 'display';
   $path = drupal_get_path('module', 'field_group_tooltip');
+
+  $field_group_types = field_group_formatter_info();
+  $formatter = $field_group_types[$mode][$group->format_type];
+  $default_settings = $formatter['instance_settings'];
+  $settings = $group->format_settings['instance_settings'];
+
+  $css_selector = !empty($settings['css_selector'])
+    ? $settings['css_selector']
+    : '.' . $group->entity_type . '-' . $group->bundle;
+
+  $width = isset($settings['width'])
+    ? $settings['width'] : $default_settings['width'];
+
+  $trigger = isset($settings['trigger'])
+    ? $settings['trigger'] : $default_settings['trigger'];
+
+    dpm($css_selector);
 
   $tooltip = array(
     '#type' => 'markup',
     '#weight' => $group->weight,
-    '#prefix' => '<div class="field-group field-group-tooltip">',
+    '#prefix' => '<div class="field-group-tooltip ' . $settings['classes'] . '">',
     '#suffix' => '</div>',
     '#attached' => array('css' => array($path . '/css/field_group_tooltip.css')),
   );
@@ -80,8 +112,8 @@ function field_group_tooltip_field_group_pre_render(&$element, $group, &$form) {
   $options['field_group_tooltip'] = array(
     'cssSelect' => $css_selector,
     'contentSelector' => '$(this).find(".field-group-tooltip").html()',
-    'trigger' => array(0 => 'mouseover'),
-    'width' => 250,
+    'trigger' => array(0 => $trigger),
+    'width' => $width,
   );
   beautytips_add_beautytips($options);
   $element += $tooltip;
