@@ -45,6 +45,7 @@ function field_group_tooltip_field_group_format_settings($group) {
   $form['instance_settings']['css_selector'] = array(
     '#title' => t('CSS selector of tooltip parent'),
     '#type' => 'textfield',
+    '#description' => t('Examples: .node, .node-article, .node-teaser, .comment'),
     '#default_value' => isset($settings['css_selector'])
       ? $settings['css_selector'] : $default_settings['css_selector'],
   );
