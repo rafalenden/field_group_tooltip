@@ -100,8 +100,6 @@ function field_group_tooltip_field_group_pre_render(&$element, $group, &$form) {
   $trigger = isset($settings['trigger'])
     ? $settings['trigger'] : $default_settings['trigger'];
 
-    dpm($css_selector);
-
   $tooltip = array(
     '#type' => 'markup',
     '#weight' => $group->weight,
