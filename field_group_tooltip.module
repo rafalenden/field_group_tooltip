@@ -28,6 +28,9 @@ function field_group_tooltip_field_group_formatter_info() {
  * Implements hook_field_group_format_settings().
  */
 function field_group_tooltip_field_group_format_settings($group) {
+  if ($group->format_type !== 'tooltip') {
+    return;
+  }
   $form = array(
     'instance_settings' => array(
       '#tree' => TRUE,
