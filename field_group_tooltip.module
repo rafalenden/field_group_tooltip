@@ -92,7 +92,7 @@ function field_group_tooltip_field_group_pre_render(&$element, $group, &$form) {
 
   $css_selector = !empty($settings['css_selector'])
     ? $settings['css_selector']
-    : '.' . $group->entity_type . '-' . $group->bundle;
+    : '.' . drupal_clean_css_identifier($group->entity_type . '-' . $group->bundle);
 
   $width = isset($settings['width'])
     ? $settings['width'] : $default_settings['width'];
